@@ -38,32 +38,43 @@ public class PigLatin {
 	}
 	
 	public static void translate(String word) {
-		char punctuation = ' ';		
+		char punctuation = ' ';	
+		boolean caps = false;		
+		
 		if (isPunctuation(word.charAt(word.length() - 1))) {
 			punctuation = word.charAt(word.length() - 1);
 			word = word.substring(0, word.length() - 1);
 		}	
+
+		
 		for (int i = 0; i < word.length(); i++) {
 			char letter = word.charAt(i);
+	
+			for (char character : word.toCharArray()) {
+				if (character <= 65 || character >= 90) {
+					caps = false;
+				} else {
+					caps = true;
+				}
+			}
+			
+			String way = "way";
+			String ay = "ay";			
+			if (caps) {
+				way = way.toUpperCase();
+				ay = ay.toUpperCase();
+			}
+			
 			if (word.indexOf('@') > 0 || isNumber(letter)) {
 				System.out.print(word + punctuation + " ");
 				return;
-			}
-			else if (isVowel(word.charAt(0))) {
-				System.out.print(word + "way" + punctuation + " ");
+			} else if (isVowel(word.charAt(0))) {
+				System.out.print(word + way + punctuation + " ");
 				return;
 			} else {
 				if (isVowel(letter)) {
-					String pigWord = word.substring(i, word.length()) + word.substring(0, i) + "ay";
+					String pigWord = word.substring(i, word.length()) + word.substring(0, i) + ay;
 					if (word.charAt(0) >= 65 || word.charAt(0) <= 90) {
-						boolean caps = false;
-						for (char character : word.toCharArray()) {
-							if (character <= 65 || character >= 90) {
-								break;
-							} else {
-								caps = true;
-							}
-						}
 						if (!caps) {
 							String wordUpper = pigWord.toUpperCase();
 							String wordLower = pigWord.toLowerCase();
