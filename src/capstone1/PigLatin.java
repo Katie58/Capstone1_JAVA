@@ -20,6 +20,7 @@ public class PigLatin {
 		System.out.println("Welcome to the Pig Latin Tranlator!\n");
 	}
 	
+	///////get and return user input
 	public static String userInput() {
 		boolean valid = false;
 		String input = " ";
@@ -31,61 +32,90 @@ public class PigLatin {
 		return input;
 	}
 	
+	////////break string into word and send each to translate
 	public static void displayResults(String phrase) {
 		for (String word : phrase.split(" ")) {
 			translate(word.trim());
 		}
 	}
-	
+	////////translate one word at a time
 	public static void translate(String word) {
 		char punctuation = ' ';	
-		boolean caps = false;		
+		boolean caps = false;	
+		String way = "way";
+		String ay = "ay";	
 		
-		if (isPunctuation(word.charAt(word.length() - 1))) {
-			punctuation = word.charAt(word.length() - 1);
-			word = word.substring(0, word.length() - 1);
-		}	
-
 		
-		for (int i = 0; i < word.length(); i++) {
-			char letter = word.charAt(i);
-	
-			for (char character : word.toCharArray()) {
-				if (character <= 65 || character >= 90) {
-					caps = false;
-				} else {
-					caps = true;
-				}
-			}
-			
-			String way = "way";
-			String ay = "ay";			
-			if (caps) {
+		if (!translateUnchanged(word)) {//if word should be changed before printing
+			//check for punctuation, store as char, remove from word
+			if (isPunctuation(word.charAt(word.length() - 1))) {
+				punctuation = word.charAt(word.length() - 1);
+				word = word.substring(0, word.length() - 1);
+			}	
+			//check for if all caps, if true, caps suffix
+			if (translateCaps(word)) {
 				way = way.toUpperCase();
 				ay = ay.toUpperCase();
+				caps = true;
 			}
-			
-			if (word.indexOf('@') > 0 || isNumber(letter)) {
-				System.out.print(word + punctuation + " ");
-				return;
-			} else if (isVowel(word.charAt(0))) {
-				System.out.print(word + way + punctuation + " ");
-				return;
+			//check if first letter is vowel, if true print translation
+			if (isVowel(word.charAt(0))) {
+				System.out.print(word + way);
+				charPrintSpace(punctuation);
+			//else shift characters and print translation
 			} else {
-				if (isVowel(letter)) {
-					String pigWord = word.substring(i, word.length()) + word.substring(0, i) + ay;
-					if (word.charAt(0) >= 65 || word.charAt(0) <= 90) {
-						if (!caps) {
-							String wordUpper = pigWord.toUpperCase();
-							String wordLower = pigWord.toLowerCase();
-							System.out.print(wordUpper.charAt(0) + wordLower.substring(1, wordLower.length()) + punctuation + " ");	
-							return;							
+				//check each character to find first vowel
+				for (int i = 0; i < word.length(); i ++) {
+					char letter = word.charAt(i);
+					if (isVowel(letter)) {
+						//shift characters and create new word
+						String pigWord = word.substring(i, word.length()) + word.substring(0, i) + ay;
+						//check for title case & caps, if true, alter case and print
+						if (word.charAt(0) >= 65 || word.charAt(0) <= 90) {
+							if (!caps) {
+								String wordUpper = pigWord.toUpperCase();
+								String wordLower = pigWord.toLowerCase();
+								System.out.print(wordUpper.charAt(0) + wordLower.substring(1, wordLower.length()));	
+								charPrintSpace(punctuation);
+								return;							
+							}
 						}
-					}
-					System.out.print(pigWord + punctuation + " ");
-					return;
+						//if lower case, print
+						System.out.print(pigWord);
+						charPrintSpace(punctuation);
+						return;
+					}					
 				}
 			}
+		}
+	}
+		
+	/////////check if word should print unchanged
+	public static boolean translateUnchanged(String word) {
+		for (char letter : word.toCharArray()) {
+			if (letter == '@' || isNumber(letter)) {
+				System.out.println(word + " ");
+				return true;		
+			}	
+		}
+		return false;
+	}
+	
+	////////check if word is all caps
+	public static boolean translateCaps(String word) {
+		for (char character : word.toCharArray()) {
+			if (character <= 65 || character >= 90) {
+				return false;
+			} 
+		}
+		return true;
+	}
+	
+	/////////////check if punctuation or space is present and print accordingly
+	private static void charPrintSpace(char print) {
+		System.out.print(print);
+		if (print != ' ') {	
+			System.out.print(" ");
 		}
 	}
 	
@@ -107,7 +137,7 @@ public class PigLatin {
 	}
 	
 	private static boolean isPunctuation(char lastChar) {
-		if (lastChar == '.' || lastChar == ',' || lastChar == '!' || lastChar == '?' || lastChar == ';' || lastChar == ':' || lastChar == '-') {
+		if (lastChar == '.' || lastChar == ',' || lastChar == '!' || lastChar == '?' || lastChar == ';' || lastChar == ':' || lastChar == ')' || lastChar == '-') {
 			return true;
 		}
 		else {
