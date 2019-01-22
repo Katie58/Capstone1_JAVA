@@ -41,10 +41,7 @@ public class PigLatin {
 	////////translate one word at a time
 	public static void translate(String word) {
 		char punctuation = ' ';	
-		boolean caps = false;	
-		String way = "way";
-		String ay = "ay";	
-		
+		boolean caps = false;			
 		
 		if (!translateUnchanged(word)) {//if word should be changed before printing
 			//check for punctuation, store as char, remove from word
@@ -53,14 +50,18 @@ public class PigLatin {
 				word = word.substring(0, word.length() - 1);
 			}	
 			//check for if all caps, if true, caps suffix
-			if (translateCaps(word)) {
-				way = way.toUpperCase();
-				ay = ay.toUpperCase();
-				caps = true;
+			if (punctuation != ' ') {
+				caps = translateCaps(word.substring(0, word.length() - 1));
+			} else {
+				caps = translateCaps(word);
 			}
 			//check if first letter is vowel, if true print translation
 			if (isVowel(word.charAt(0))) {
-				System.out.print(word + way);
+				if (caps) {
+					System.out.print(word + "WAY");
+				} else {
+					System.out.print(word + "way");
+				}				
 				charPrintSpace(punctuation);
 			//else shift characters and print translation
 			} else {
@@ -69,7 +70,12 @@ public class PigLatin {
 					char letter = word.charAt(i);
 					if (isVowel(letter)) {
 						//shift characters and create new word
-						String pigWord = word.substring(i, word.length()) + word.substring(0, i) + ay;
+						String pigWord = word.substring(i, word.length()) + word.substring(0, i);
+						if (caps) {
+							pigWord += "AY";
+						} else {
+							pigWord += "ay";
+						}	
 						//check for title case & caps, if true, alter case and print
 						if (word.charAt(0) >= 65 || word.charAt(0) <= 90) {
 							if (!caps) {
@@ -104,7 +110,7 @@ public class PigLatin {
 	////////check if word is all caps
 	public static boolean translateCaps(String word) {
 		for (char character : word.toCharArray()) {
-			if (character <= 65 || character >= 90) {
+			if (character < 65 || character > 90) {
 				return false;
 			} 
 		}
@@ -146,12 +152,7 @@ public class PigLatin {
 	}
 	
 	private static boolean isVowel(char letter) {
-		if ((letter == 'a') || (letter == 'e') || (letter == 'i') || (letter == 'o') || (letter == 'u') || (letter == 'A') || (letter == 'E') || (letter == 'I') || (letter == 'O') || (letter == 'U')) {
-			return true;
-		}
-		else {
-			return false;
-		}
+		return "aeiouAEIOU".indexOf(letter) != -1;
 	}
 	
 	private static boolean retry() {
